@@ -1,0 +1,68 @@
+```{r}
+library(gstar)
+library(xts)
+```
+
+```{r}
+#-----import dataset----#
+df <- read.csv("dataset.csv", header=TRUE)
+df <- df[,c("DateTime","Zone1","Zone2","Zone3")]
+```
+
+```{r}
+#-----adjust date time format----#
+df$DateTime <- as.POSIXct(df$DateTime,format='%m/%d/%Y %H:%M')
+df$Date <- strftime(df$DateTime,format='%Y-%m-%d')
+df$Time <- strftime(df$DateTime,format='%H:%M')
+
+df <- df[df$Time == "00:00",c("DateTime","Zone1","Zone2","Zone3")]
+df
+```
+
+```{r}
+#-----Use data with xts object----#
+x = xts(df[, -1], order.by = df$DateTime)
+s <- round(nrow(x) * 0.8) # 0.8
+```
+
+```{r}
+## split into training and testing (80:20)
+x_train <- x[1:s, ]
+x_test <- x[-c(1:s), ]
+```
+
+```{r}
+weight = matrix(c(0, 1, 1, # create the uniform weight.
+                  1, 0, 1,
+                  1, 1, 0), ncol = 3, nrow = 3)
+weight = weight/(ncol(x) - 1) #the sum of weight is equal to 1 every row.
+```
+
+```{r}
+fit <- gstar(x_train, weight = weight, p = 1, d = 0, est = "OLS")
+summary(fit)
+```
+
+```{r}
+performance(fit)
+```
+
+```{r}
+performance(fit, x_test) ## to check the performance with testing data
+```
+
+```{r}
+predict(fit, n = 10) #forecast 10 data ahead
+```
+
+```{r}
+plot(fit)
+```
+
+```{r}
+plot(fit, n_predict = 10) #plot with 10 forecasting data
+```
+
+```{r}
+plot(fit, testing = x_test)
+```
