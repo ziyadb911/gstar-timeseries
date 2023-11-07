@@ -1,6 +1,7 @@
 ```{r}
 library(gstar)
 library(xts)
+library(tseries)
 ```
 
 ```{r}
@@ -16,7 +17,39 @@ df$Date <- strftime(df$DateTime,format='%Y-%m-%d')
 df$Time <- strftime(df$DateTime,format='%H:%M')
 
 df <- df[df$Time == "00:00",c("DateTime","Zone1","Zone2","Zone3")]
-df
+```
+
+```{r}
+# Zone1
+adf.test(as.matrix(df[2]))
+```
+
+```{r}
+# Zone2
+adf.test(as.matrix(df[3]))
+```
+
+```{r}
+# Zone3
+adf.test(as.matrix(df[4]))
+```
+
+```{r}
+cf1 <- ccf(df[2], df[3], plot=TRUE)
+
+print(cf1)
+```
+
+```{r}
+cf2 <- ccf(df[3], df[4], plot=TRUE)
+
+print(cf2)
+```
+
+```{r}
+cf3 <- ccf(df[2], df[4], plot=TRUE)
+
+print(cf3)
 ```
 
 ```{r}
