@@ -20,7 +20,6 @@ df <- df[df$Time == "00:00",c("DateTime","Zone1","Zone2","Zone3")]
 ```
 
 ```{r}
-# Zone1
 adf.test(as.matrix(df[2]))
 ```
 
